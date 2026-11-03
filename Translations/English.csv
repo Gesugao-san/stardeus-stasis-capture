@@ -1,0 +1,6 @@
+Key,Translation,Version,Comment (context for translators)
+stasiscapture.action,Carrying to stasis,,Current activity of the colonist carrying a being into a Stasis Array
+stasiscapture.tip,"A colonist will carry this incapacitated being to the nearest free chamber ({0}).",,"Tooltip of the ""Send to Stasis"" button; {0} is the game's name of the Stasis Array"
+stasiscapture.tip.faction,"Not a colonist: it keeps its faction and will wake up as it is now. A hostile being wakes up hostile, also when low cryostability wakes sleepers on its own.",,Warning in the tooltip for raiders and wild creatures
+stasiscapture.no.array,"{0}: none is working",,{0} is the game's name of the Stasis Array
+stasiscapture.full,"{0}: all chambers are taken",,{0} is the game's name of the Stasis Array

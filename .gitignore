@@ -1,0 +1,8 @@
+# Build output and local files
+.vscode/obj/
+.vscode/bin/
+bin/
+obj/
+__pycache__/
+Artwork/fonts/
+SteamWorkshopItemId

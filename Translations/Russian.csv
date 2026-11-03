@@ -1,0 +1,6 @@
+Key,Translation,Version,Comment (context for translators)
+stasiscapture.action,Несёт в стазис,,
+stasiscapture.tip,"Колонист отнесёт это обездвиженное существо в ближайшую свободную камеру ({0}).",,
+stasiscapture.tip.faction,"Это не колонист: оно сохранит свою фракцию и проснётся тем, кем было. Враг проснётся врагом, в том числе когда низкая криостабильность будит спящих сама.",,
+stasiscapture.no.array,"{0}: ни одного работающего",,
+stasiscapture.full,"{0}: все камеры заняты",,

@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Stasis Capture: builds 0.15/Libraries/StasisCapture.dll against the installed game (v0.15).
+       Example: dotnet build .vscode/mod.csproj -c Release -p:StardeusDir="D:/Games/Stardeus" -->
+  <PropertyGroup>
+    <StardeusDir Condition="'$(StardeusDir)' == ''">C:/Program Files (x86)/Steam/steamapps/common/Stardeus</StardeusDir>
+
+    <LangVersion>9.0</LangVersion>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net481</TargetFramework>
+    <PlatformTarget>x64</PlatformTarget>
+    <RootNamespace>StasisCapture</RootNamespace>
+    <AssemblyName>StasisCapture</AssemblyName>
+    <OutputPath>../0.15/Libraries</OutputPath>
+    <Deterministic>true</Deterministic>
+    <DebugType>embedded</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <!-- The built DLL may be published: store source paths relative to the mod, not C:/Users/<name>/... -->
+    <PathMap>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)/..'))=StasisCapture/</PathMap>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <NoConfig>true</NoConfig>
+    <NoStdLib>true</NoStdLib>
+    <AddAdditionalExplicitAssemblyReferences>false</AddAdditionalExplicitAssemblyReferences>
+    <ImplicitlyExpandNETStandardFacades>false</ImplicitlyExpandNETStandardFacades>
+    <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../Code/**/*.cs" />
+    <Reference Include="$(StardeusDir)/Stardeus_Data/Managed/*.dll">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+</Project>
