@@ -4,3 +4,6 @@ stasiscapture.tip,"Колонист отнесёт это обездвиженн
 stasiscapture.tip.faction,"Это не колонист: оно сохранит свою фракцию и проснётся тем, кем было. Враг проснётся врагом, в том числе когда низкая криостабильность будит спящих сама.",,
 stasiscapture.no.array,"{0}: ни одного работающего",,
 stasiscapture.full,"{0}: все камеры заняты",,
+stasiscapture.section,Обездвиженные: отнесёт колонист,,
+stasiscapture.section.empty,Обездвиженных существ нет,,
+stasiscapture.ordered,Поручено,,

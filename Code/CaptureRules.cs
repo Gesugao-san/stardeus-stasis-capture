@@ -108,6 +108,13 @@ namespace StasisCapture {
       return The.Defs?.TryGet(ArrayDefId)?.NameT ?? "Stasis Array";
     }
 
+    /// <summary>Why this particular array can't take a being, or None when it can.</summary>
+    public static ArrayProblem ProblemOf(StasisArrayComp array) {
+      if (!IsWorking(array)) { return ArrayProblem.NoArray; }
+      if (!HasRoom(array)) { return ArrayProblem.Full; }
+      return IsStableEnough(array) ? ArrayProblem.None : ArrayProblem.Unstable;
+    }
+
     /// <summary>Reports the most relevant reason why no array can take a being.</summary>
     public static ArrayProblem FindProblem(GameState s) {
       var working = WorkingArrays(s);

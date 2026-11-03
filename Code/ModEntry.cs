@@ -1,7 +1,8 @@
 // Stasis Capture — Stardeus v0.15 mod.
 // Lets colonists carry any living, biological, incapacitated being (raiders,
 // animals, crawlers, own downed colonists) into a Stasis Array. Select the being
-// and press "Send to Stasis" on the bottom bar. Sleepers keep their faction:
+// and press "Send to Stasis" on the bottom bar, or use the "Incapacitated"
+// section of a Stasis Array's "Send to Stasis" panel. Sleepers keep their faction:
 // a hostile being wakes up hostile, as the game does for any known sleeper.
 
 using System;
@@ -22,14 +23,22 @@ namespace StasisCapture {
 
     [RuntimeInitializeOnLoadMethod]
     private static void Init() {
+      var harmony = new Harmony(HarmonyId);
+      // Without this patch only orders that were pending in a save are lost on load
+      ApplyPatch("saved orders", () => harmony.Patch(
+        AccessTools.Method(typeof(StorableBeingComp), nameof(StorableBeingComp.OnGoalLoad)),
+        postfix: new HarmonyMethod(typeof(ModEntry), nameof(AfterGoalLoad))));
+      // Without this patch the bottom bar button is the only way to give the order
+      ApplyPatch("Stasis Array panel section", () => StasisPanelSection.Apply(harmony));
+      D.Warn("[StasisCapture] Loaded");
+    }
+
+    /// <summary>Runs one setup step; a failure disables only that feature.</summary>
+    private static void ApplyPatch(string feature, Action apply) {
       try {
-        var harmony = new Harmony(HarmonyId);
-        harmony.Patch(AccessTools.Method(typeof(StorableBeingComp), nameof(StorableBeingComp.OnGoalLoad)),
-          postfix: new HarmonyMethod(typeof(ModEntry), nameof(AfterGoalLoad)));
-        D.Warn("[StasisCapture] Loaded");
+        apply();
       } catch (Exception e) {
-        // Without the patch only orders that were pending in a save are lost on load
-        D.Err("[StasisCapture] Patching StorableBeingComp.OnGoalLoad failed: " + e);
+        D.Err("[StasisCapture] Setup of " + feature + " failed: " + e);
       }
     }
 

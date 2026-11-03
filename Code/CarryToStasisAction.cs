@@ -113,6 +113,9 @@ namespace StasisCapture {
       int pos = agent.PosIdx;
       int island = grounded ? S.Sys.Areas.IslandAt(pos) : 0;
 
+      // 0 when the order came from the bottom bar: then the nearest array wins
+      if (!goal.TryGetVar(CaptureOrder.PreferredArrayVar, out int preferred)) { preferred = 0; }
+
       StasisArrayComp best = null;
       float bestDist = float.MaxValue;
       bool skippedUnreachable = false;
@@ -133,7 +136,8 @@ namespace StasisCapture {
           continue;
         }
 
-        float dist = Pos.SqrDistance(pos, inPort);
+        // The array the player picked wins over any nearer one, if it can take the being
+        float dist = array.EntityId == preferred ? -1f : Pos.SqrDistance(pos, inPort);
         if (dist < bestDist) {
           best = array;
           bestDist = dist;

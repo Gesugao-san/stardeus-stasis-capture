@@ -25,9 +25,14 @@ namespace StasisCapture {
     /// <summary>How long a goal waits before re-checking a missing array.</summary>
     private const int RetryAfterTicks = 600;
 
+    /// <summary>Goal variable with the array the player chose; the carrier prefers it.</summary>
+    public const string PreferredArrayVar = "StasisCapture_ArrayId";
+
     /// <summary>Orders colonists to carry the being into a Stasis Array.</summary>
+    /// <param name="being">Incapacitated being to send.</param>
+    /// <param name="preferredArrayId">Entity id of the array to use when it has room, or 0 for the nearest.</param>
     /// <returns>True when the order was placed.</returns>
-    public static bool TryOrder(Being being) {
+    public static bool TryOrder(Being being, int preferredArrayId = 0) {
       if (!CaptureRules.IsCapturable(being, out var storable)) { return false; }
       if (CaptureRules.IsOrdered(being)) { return false; }
 
@@ -37,6 +42,7 @@ namespace StasisCapture {
         .ByPlayer(true)
         .WithRequiredAbilities(AbilityA, AbilityB)
         .WriteInitialState();
+      if (preferredArrayId != 0) { goal.WithVar(PreferredArrayVar, preferredArrayId); }
       goal.CheckDoable = Check;
 
       // An explicit order replaces whatever was planned for the being, e.g. a rescue to a bed
