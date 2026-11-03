@@ -30,6 +30,8 @@ namespace StasisCapture {
         postfix: new HarmonyMethod(typeof(ModEntry), nameof(AfterGoalLoad))));
       // Without this patch the bottom bar button is the only way to give the order
       ApplyPatch("Stasis Array panel section", () => StasisPanelSection.Apply(harmony));
+      // Without this patch captured beings look like colonists on the wake-up screen
+      ApplyPatch("wake-up card style", () => WakeUpCardStyle.Apply(harmony));
       D.Warn("[StasisCapture] Loaded");
     }
 

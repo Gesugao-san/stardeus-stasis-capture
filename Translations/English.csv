@@ -8,3 +8,4 @@ stasiscapture.section,Incapacitated: a colonist carries them,,Header of the mod'
 stasiscapture.section.empty,No incapacitated beings,,
 stasiscapture.ordered,Ordered,,Button text when a colonist already has the job
 stasiscapture.died,Died on the way to stasis,,Reason shown when the carried being dies before reaching the Stasis Array
+stasiscapture.wake.button,Wake up (not a colonist),,"Button on the wake-up choice card of a sleeper who is not a colonist (raider, wild creature)"
