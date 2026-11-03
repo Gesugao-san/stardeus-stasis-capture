@@ -1,0 +1,22 @@
+# Статические проверки мода на каждый пуш и PR.
+# DLL мода здесь не собирается — для неё нужны проприетарные DLL игры,
+# их нельзя класть в публичный репозиторий. Сборка остаётся локальной (build.cmd),
+# а собранная DLL коммитится; check_mod.py проверяет её версию.
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      # ModInfo.json, переводы, ключи из кода, размер обложки, XML проекта, версия DLL
+      - name: Mod static checks
+        run: python3 .github/scripts/check_mod.py

@@ -1,0 +1,80 @@
+# Релиз мода на GitHub. Запуск:
+#   * кнопкой: Actions → Release → Run workflow (по умолчанию черновик);
+#   * пушем тега: git tag v1.0.0 && git push origin v1.0.0 (тоже черновик).
+# Версия берётся из ModInfo.json (ModVersion), описание — из раздела CHANGELOG.md.
+# DLL мода здесь не собираются (нужны DLL игры): в архив идут DLL из репозитория,
+# а check_mod.py перед этим проверяет, что DLL собрана с той же версией мода.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      draft:
+        description: 'Черновик: опубликовать вручную после проверки'
+        type: boolean
+        default: true
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write   # создать тег и релиз
+
+# Два релиза одновременно могли бы создать дубликаты
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      # Те же проверки, что в CI: релиз не выходит с битыми переводами или старой DLL
+      - name: Mod static checks
+        run: python3 .github/scripts/check_mod.py
+
+      # Архив StasisCapture-<version>.zip и notes.md; значения передаются в outputs
+      - name: Package
+        id: pkg
+        run: python3 .github/scripts/package_release.py dist
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.pkg.outputs.tag }}
+          TITLE: ${{ steps.pkg.outputs.title }}
+          ZIP: ${{ steps.pkg.outputs.zip }}
+          NOTES: ${{ steps.pkg.outputs.notes }}
+          # Пуш тега — всегда черновик; кнопка — по галочке
+          DRAFT: ${{ github.event_name == 'push' || inputs.draft }}
+        run: |
+          # Пушнутый тег должен совпадать с версией в ModInfo.json
+          if [ "$GITHUB_EVENT_NAME" = "push" ] && [ "$GITHUB_REF_NAME" != "$TAG" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match ModInfo.json version ($TAG)"
+            exit 1
+          fi
+
+          # Черновики не находятся по тегу через API, поэтому ищем по списку релизов
+          if gh release list --limit 200 --json tagName --jq '.[].tagName' | grep -qxF "$TAG"; then
+            echo "::error::Release $TAG already exists: bump ModVersion or delete that release"
+            exit 1
+          fi
+
+          # Существующий тег на другом коммите дал бы релиз со старым кодом и новым архивом.
+          # Код возврата проверяется через if: при ошибке gh api печатает тело ответа в stdout
+          if TAG_SHA=$(gh api "repos/$GITHUB_REPOSITORY/commits/$TAG" --jq .sha 2>/dev/null); then
+            if [ "$TAG_SHA" != "$GITHUB_SHA" ]; then
+              echo "::error::Tag $TAG points to $TAG_SHA, not to $GITHUB_SHA"
+              exit 1
+            fi
+          fi
+
+          ARGS=(--target "$GITHUB_SHA" --title "$TITLE" --notes-file "$NOTES")
+          if [ "$DRAFT" = "true" ]; then
+            ARGS+=(--draft)
+          fi
+          gh release create "$TAG" "$ZIP" "${ARGS[@]}"
+          echo "### $TITLE" >> "$GITHUB_STEP_SUMMARY"
+          echo "Release $TAG created (draft: $DRAFT)" >> "$GITHUB_STEP_SUMMARY"
