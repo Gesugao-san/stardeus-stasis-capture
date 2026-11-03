@@ -14,8 +14,9 @@ namespace StasisCapture {
   /// The wake-up choice shows sleepers as colonist cards with a "Select this colonist"
   /// button, even when the sleeper is a captured raider who wakes up hostile. A postfix on
   /// WakeUpBeingOptionWidget.Load turns such a card red and renames its button.
-  /// Only the card's own frame, header and button are recolored: the persona and job
-  /// rows are pooled widgets shared with other windows and must keep their colors.
+  /// Only the card's own frame and header are recolored: the persona and job rows are
+  /// pooled widgets shared with other windows, and the button repaints its background
+  /// by state, so both keep their colors.
   /// </summary>
   internal static class WakeUpCardStyle {
     private static readonly AccessTools.FieldRef<WakeUpBeingOptionWidget, WButtonText> buttonRef =
@@ -56,10 +57,12 @@ namespace StasisCapture {
     /// <summary>Turns green UI parts red for a stranger, restores them for a colonist.</summary>
     private static void Recolor(WakeUpBeingOptionWidget card, bool stranger) {
       var items = itemsRef(card)?.transform;
+      // The button paints its own background by state, so a red text would end up on green
+      var button = buttonRef(card)?.transform;
       var avatar = headerRef(card)?.Image;
       foreach (var graphic in card.GetComponentsInChildren<Graphic>(true)) {
         if (graphic == avatar) { continue; }
-        if (items != null && graphic.transform.IsChildOf(items)) { continue; }
+        if (IsUnder(graphic, items) || IsUnder(graphic, button)) { continue; }
 
         if (!originals.TryGetValue(graphic, out var original)) {
           if (!stranger) { continue; }  // never touched, nothing to restore
@@ -68,6 +71,10 @@ namespace StasisCapture {
         }
         graphic.color = stranger ? Redden(original.Value) : original.Value;
       }
+    }
+
+    private static bool IsUnder(Graphic graphic, Transform root) {
+      return root != null && graphic.transform.IsChildOf(root);
     }
 
     /// <summary>Swaps the red and green channels of greenish colors; others (white icons) stay.</summary>
