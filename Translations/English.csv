@@ -7,3 +7,4 @@ stasiscapture.full,"{0}: all chambers are taken",,{0} is the game's name of the 
 stasiscapture.section,Incapacitated: a colonist carries them,,Header of the mod's block in the Stasis Array's Send to Stasis panel
 stasiscapture.section.empty,No incapacitated beings,,
 stasiscapture.ordered,Ordered,,Button text when a colonist already has the job
+stasiscapture.died,Died on the way to stasis,,Reason shown when the carried being dies before reaching the Stasis Array

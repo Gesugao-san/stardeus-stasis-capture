@@ -60,10 +60,12 @@ namespace StasisCapture {
     }
 
     public override AIActionResult Execute(GameState S, AIAgentComp agent, AIGoal goal, long ticks) {
-      if (agent.Motion.IsBusy) { return InProgress; }
       if (!(goal.Target is StorableBeingComp storable)) {
         return Error("Goal target not storable: {0}", goal);
       }
+      // Checked before the "still walking" early return, so it fires mid-route
+      if (IsLost(storable.Being)) { return GiveUp(agent, storable.Being); }
+      if (agent.Motion.IsBusy) { return InProgress; }
 
       // Only this very being counts as "carrying": anything else in the hands would
       // otherwise be dropped at the array while the being stays where it lies
@@ -80,6 +82,26 @@ namespace StasisCapture {
         return TryAnotherArray(agent);
       }
       return StoreInto(S, agent, storable, array, goal, ticks);
+    }
+
+    /// <summary>
+    /// The being died, or came to and is no longer incapacitated: the job is over.
+    /// Only body and life state are checked here, not the full capture rules, since
+    /// being carried may change other state flags of the being.
+    /// </summary>
+    private static bool IsLost(Being being) {
+      return being == null || being.IsDead || !being.IsAlive
+        || being.Data?.Body == null || !being.Data.Body.IsIncapacitated;
+    }
+
+    /// <summary>Puts the being down where the carrier stands and cancels the goal.</summary>
+    private AIActionResult GiveUp(AIAgentComp agent, Being being) {
+      if (IsCarrying(agent, being)) { agent.Being.Graphics.DropIfCarrying(); }
+      ResetTarget(agent);
+      bool died = being == null || being.IsDead || !being.IsAlive;
+      D.Warn("[StasisCapture] {0} on the way to stasis, {1} gives up",
+        died ? "Died" : "Came to", agent.BeingData?.Name);
+      return Cancelled(died ? "stasiscapture.died".T() : T.AdRejTargetUnavailable);
     }
 
     private static bool IsCarrying(AIAgentComp agent, Being being) {
