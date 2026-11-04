@@ -31,7 +31,7 @@ cancelled.
 
 ## Install
 
-- **Steam Workshop:** subscribe and enable the mod in Main Menu → Mods.
+- **[Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3833313051):** subscribe and enable the mod in Main Menu → Mods.
 - **Manually:** put the mod folder into `%USERPROFILE%\AppData\LocalLow\Kodo Linija\Stardeus\Mods\StasisCapture`
   (needs `ModInfo.json`, `ModCover.jpg`, `Translations\` and `0.15\Libraries\StasisCapture.dll`).
 

@@ -29,7 +29,7 @@
 
 ## Установка
 
-- **Мастерская Steam:** подписаться и включить мод в главном меню → «Моды».
+- **[Мастерская Steam](https://steamcommunity.com/sharedfiles/filedetails/?id=3833313051):** подписаться и включить мод в главном меню → «Моды».
 - **Вручную:** положить папку мода в `%USERPROFILE%\AppData\LocalLow\Kodo Linija\Stardeus\Mods\StasisCapture`
   (нужны `ModInfo.json`, `ModCover.jpg`, `Translations\` и `0.15\Libraries\StasisCapture.dll`).
 
